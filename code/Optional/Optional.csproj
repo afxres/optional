@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <AssemblyName>Mikodev.Optional</AssemblyName>
+    <RootNamespace>Mikodev.Optional</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Mikodev</Authors>
+    <Company>Mikodev</Company>
+    <Copyright>Mikodev 2019</Copyright>
+    <Product>Mikodev.Optional</Product>
+    <Version>1.1.1</Version>
+    <PackageTags>optional</PackageTags>
+    <PackageProjectUrl>https://github.com/afxres/optional</PackageProjectUrl>
+  </PropertyGroup>
+
+</Project>
