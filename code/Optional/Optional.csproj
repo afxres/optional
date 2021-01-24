@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Mikodev.Optional</AssemblyName>
     <RootNamespace>Mikodev.Optional</RootNamespace>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Mikodev</Authors>
     <Company>Mikodev</Company>
@@ -13,6 +13,8 @@
     <Version>1.1.1</Version>
     <PackageTags>optional</PackageTags>
     <PackageProjectUrl>https://github.com/afxres/optional</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/afxres/optional.git</RepositoryUrl>
   </PropertyGroup>
 
 </Project>

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace Mikodev.Optional
 {
@@ -17,21 +16,22 @@ namespace Mikodev.Optional
 
         private Result(ResultFlag flag, TOk ok, TError error)
         {
-            Debug.Assert(flag == ResultFlag.Ok || flag == ResultFlag.Error);
+            Debug.Assert(flag is ResultFlag.Ok or ResultFlag.Error);
             this.flag = flag;
             this.ok = ok;
             this.error = error;
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowInvalid() => throw new InvalidOperationException("Can not operate on default value of result!");
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ThrowOnInvalid() { if (flag == ResultFlag.Invalid) ThrowInvalid(); }
-
-        internal ResultFlag GetData(out TOk ok, out TError error)
+        private void Except()
         {
-            ThrowOnInvalid();
+            if (flag is ResultFlag.Ok or ResultFlag.Error)
+                return;
+            throw new InvalidOperationException("Can not operate on default value of result!");
+        }
+
+        internal ResultFlag Intent(out TOk ok, out TError error)
+        {
+            Except();
             ok = this.ok;
             error = this.error;
             return flag;
@@ -40,21 +40,21 @@ namespace Mikodev.Optional
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj)
         {
-            ThrowOnInvalid();
+            Except();
             return obj is Result<TOk, TError> result && Equals(result);
         }
 
         public bool Equals(Result<TOk, TError> other)
         {
-            ThrowOnInvalid();
-            other.ThrowOnInvalid();
+            Except();
+            other.Except();
             return flag == other.flag && EqualityComparer<TOk>.Default.Equals(ok, other.ok) && EqualityComparer<TError>.Default.Equals(error, other.error);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode()
         {
-            ThrowOnInvalid();
+            Except();
             var hashCode = 115863327;
             hashCode = hashCode * -1521134295 + flag.GetHashCode();
             hashCode = hashCode * -1521134295 + EqualityComparer<TOk>.Default.GetHashCode(ok);
@@ -72,17 +72,17 @@ namespace Mikodev.Optional
 
         public static implicit operator Result<TOk, TError>(Result<TOk, Unit> result)
         {
-            result.ThrowOnInvalid();
+            result.Except();
             return new Result<TOk, TError>(result.flag, result.ok, default);
         }
 
         public static implicit operator Result<TOk, TError>(Result<Unit, TError> result)
         {
-            result.ThrowOnInvalid();
+            result.Except();
             return new Result<TOk, TError>(result.flag, default, result.error);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override string ToString() => flag == ResultFlag.Ok ? $"Ok({ok})" : flag == ResultFlag.Error ? $"Error({error})" : "Result()";
+        public override string ToString() => flag is ResultFlag.Ok ? $"Ok({ok})" : flag is ResultFlag.Error ? $"Error({error})" : "Result()";
     }
 }
