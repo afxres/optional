@@ -8,29 +8,29 @@ namespace Mikodev.Optional
 {
     public readonly partial struct Option<T> : IEquatable<Option<T>>
     {
-        private readonly OptionFlag flag;
+        private readonly OptionData data;
 
-        private readonly T data;
+        private readonly T some;
 
-        private Option(OptionFlag flag, T data)
+        private Option(OptionData data, T some)
         {
-            Debug.Assert(flag is OptionFlag.None or OptionFlag.Some);
-            this.flag = flag;
+            Debug.Assert(data is OptionData.None or OptionData.Some);
             this.data = data;
+            this.some = some;
         }
 
         private void Except()
         {
-            if (flag is OptionFlag.None or OptionFlag.Some)
+            if (data is OptionData.None or OptionData.Some)
                 return;
             throw new InvalidOperationException("Can not operate on default value of option!");
         }
 
-        internal OptionFlag Intent(out T data)
+        internal OptionData Intent(out T some)
         {
             Except();
-            data = this.data;
-            return flag;
+            some = this.some;
+            return data;
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -44,7 +44,7 @@ namespace Mikodev.Optional
         {
             Except();
             other.Except();
-            return flag == other.flag && EqualityComparer<T>.Default.Equals(data, other.data);
+            return data == other.data && EqualityComparer<T>.Default.Equals(some, other.some);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -52,8 +52,8 @@ namespace Mikodev.Optional
         {
             Except();
             var hashCode = -814067692;
-            hashCode = hashCode * -1521134295 + flag.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<T>.Default.GetHashCode(data);
+            hashCode = hashCode * -1521134295 + data.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<T>.Default.GetHashCode(some);
             return hashCode;
         }
 
@@ -61,17 +61,17 @@ namespace Mikodev.Optional
 
         public static bool operator !=(Option<T> left, Option<T> right) => !left.Equals(right);
 
-        public static Option<T> None() => new Option<T>(OptionFlag.None, default);
+        public static Option<T> None() => new Option<T>(OptionData.None, default);
 
-        public static Option<T> Some(T data) => new Option<T>(OptionFlag.Some, data);
+        public static Option<T> Some(T some) => new Option<T>(OptionData.Some, some);
 
         public static implicit operator Option<T>(Option<Unit> option)
         {
             option.Except();
-            return new Option<T>(option.flag, default);
+            return new Option<T>(option.data, default);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override string ToString() => flag is OptionFlag.None ? $"None()" : flag is OptionFlag.Some ? $"Some({data})" : "Option()";
+        public override string ToString() => data is OptionData.None ? $"None()" : data is OptionData.Some ? $"Some({some})" : "Option()";
     }
 }
