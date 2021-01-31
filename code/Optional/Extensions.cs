@@ -4,20 +4,6 @@ namespace Mikodev.Optional
 {
     public static partial class Extensions
     {
-        private static Func<Unit> MakeFunc(Action action)
-        {
-            if (action == null)
-                throw new ArgumentNullException(nameof(action));
-            return () => { action.Invoke(); return default; };
-        }
-
-        private static Func<T, Unit> MakeFunc<T>(Action<T> action)
-        {
-            if (action == null)
-                throw new ArgumentNullException(nameof(action));
-            return item => { action.Invoke(item); return default; };
-        }
-
         public static Option<Unit> None() => None<Unit>();
 
         public static Option<T> None<T>() => Option<T>.None();

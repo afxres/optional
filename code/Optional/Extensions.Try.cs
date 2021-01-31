@@ -14,7 +14,14 @@ namespace Mikodev.Optional
         {
             if (func == null)
                 throw new ArgumentNullException(nameof(func));
-            try { return Ok(func.Invoke()); } catch (TError error) { return Error(error); }
+            try
+            {
+                return Ok(func.Invoke());
+            }
+            catch (TError error)
+            {
+                return Error(error);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Mikodev.Optional
         public override bool Equals(object obj) => obj is Unit;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => default;
+        public override int GetHashCode() => 0;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override string ToString() => "()";
