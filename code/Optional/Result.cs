@@ -73,13 +73,17 @@ namespace Mikodev.Optional
         public static implicit operator Result<TOk, TError>(Result<TOk, Unit> result)
         {
             result.Except();
-            return new Result<TOk, TError>(result.data, result.ok, default);
+            if (result.data is ResultData.Ok)
+                return new Result<TOk, TError>(ResultData.Ok, result.ok, default);
+            throw new InvalidCastException($"Can not convert 'Error<{typeof(Unit).Name}>' to 'Error<{typeof(TError).Name}>'");
         }
 
         public static implicit operator Result<TOk, TError>(Result<Unit, TError> result)
         {
             result.Except();
-            return new Result<TOk, TError>(result.data, default, result.error);
+            if (result.data is ResultData.Error)
+                return new Result<TOk, TError>(ResultData.Error, default, result.error);
+            throw new InvalidCastException($"Can not convert 'Ok<{typeof(Unit).Name}>' to 'Ok<{typeof(TOk).Name}>'");
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

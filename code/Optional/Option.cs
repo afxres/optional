@@ -68,7 +68,9 @@ namespace Mikodev.Optional
         public static implicit operator Option<T>(Option<Unit> option)
         {
             option.Except();
-            return new Option<T>(option.data, default);
+            if (option.data is OptionData.None)
+                return new Option<T>(OptionData.None, default);
+            throw new InvalidCastException($"Can not convert 'Some<{typeof(Unit).Name}>' to 'Some<{typeof(T).Name}>'");
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

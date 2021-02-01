@@ -51,6 +51,16 @@ namespace Mikodev.Optional.Tests
             Assert.Equal(ErrorMessage, error.Message);
         }
 
+        [Theory(DisplayName = "Cast With Unit")]
+        [InlineData(512)]
+        [InlineData("key")]
+        public void InvalidCastOfUnit<T>(T data)
+        {
+            var error = Assert.Throws<InvalidCastException>(() => { Option<T> option = Option<Unit>.Some(new Unit()); });
+            var message = $"Can not convert 'Some<Unit>' to 'Some<{typeof(T).Name}>'";
+            Assert.Equal(message, error.Message);
+        }
+
         [Theory(DisplayName = "Some Equal")]
         [InlineData(2)]
         [InlineData("two")]

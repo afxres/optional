@@ -55,6 +55,19 @@ namespace Mikodev.Optional.Tests
             Assert.Equal(ErrorMessage, bravo.Message);
         }
 
+        [Theory(DisplayName = "Cast With Unit")]
+        [InlineData(true, 1)]
+        [InlineData(0, "false")]
+        public void InvalidCastOfUnit<T, E>(T ok, E error)
+        {
+            var alpha = Assert.Throws<InvalidCastException>(() => { Result<T, E> result = Result<Unit, E>.Ok(new Unit()); });
+            var bravo = Assert.Throws<InvalidCastException>(() => { Result<T, E> result = Result<T, Unit>.Error(new Unit()); });
+            var delta = $"Can not convert 'Ok<Unit>' to 'Ok<{typeof(T).Name}>'";
+            var hotel = $"Can not convert 'Error<Unit>' to 'Error<{typeof(E).Name}>'";
+            Assert.Equal(delta, alpha.Message);
+            Assert.Equal(hotel, bravo.Message);
+        }
+
         public static IEnumerable<object[]> EqualData => new object[][]
         {
             new object[] { Result<int, string>.Ok(1024), Result<int, string>.Ok(1024), },
