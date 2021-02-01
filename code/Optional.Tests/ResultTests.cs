@@ -8,6 +8,16 @@ namespace Mikodev.Optional.Tests
     {
         private const string ErrorMessage = "Can not operate on default value of result!";
 
+        [Theory(DisplayName = "Default & To String")]
+        [InlineData(2, "two")]
+        [InlineData("zero", 0)]
+        public void Default<T, E>(T ok, E error)
+        {
+            var result = new Result<T, E>();
+            var target = result.ToString();
+            Assert.Equal($"Result()", target);
+        }
+
         [Theory(DisplayName = "New Ok & To String")]
         [InlineData(2, "two")]
         [InlineData("zero", 0)]
@@ -110,6 +120,14 @@ namespace Mikodev.Optional.Tests
             Assert.False(target == source);
             Assert.True(source != target);
             Assert.True(target != source);
+        }
+
+        [Theory(DisplayName = "Not Equal Type Mismatch")]
+        [InlineData(1, 2, 3, "4")]
+        public void NotEqualTypeMismatch<TOk, TError, ROk, RError>(TOk a, TError b, ROk x, RError y)
+        {
+            Assert.False(Result<TOk, TError>.Ok(a).Equals(Result<ROk, RError>.Ok(x)));
+            Assert.False(Result<TOk, TError>.Error(b).Equals(Result<ROk, RError>.Error(y)));
         }
 
         [Theory(DisplayName = "Cast With Ok")]
