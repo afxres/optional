@@ -71,10 +71,10 @@ namespace Mikodev.Optional.Tests
             Assert.Equal(message, error.Message);
         }
 
-        [Theory(DisplayName = "Some Equal")]
+        [Theory(DisplayName = "Equal")]
         [InlineData(2)]
         [InlineData("two")]
-        public void SomeEqual<T>(T data)
+        public void Equal<T>(T data)
         {
             var source = Option<T>.Some(data);
             var target = Option<T>.Some(data);
@@ -90,10 +90,10 @@ namespace Mikodev.Optional.Tests
             Assert.Equal(source.GetHashCode(), target.GetHashCode());
         }
 
-        [Theory(DisplayName = "Some Not Equal")]
+        [Theory(DisplayName = "Not Equal")]
         [InlineData(3, 4)]
         [InlineData("left", "right")]
-        public void SomeNotEqual<T>(T left, T right)
+        public void NotEqual<T>(T left, T right)
         {
             var source = Option<T>.Some(left);
             var target = Option<T>.Some(right);
