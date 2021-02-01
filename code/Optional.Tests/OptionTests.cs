@@ -7,6 +7,16 @@ namespace Mikodev.Optional.Tests
     {
         private const string ErrorMessage = "Can not operate on default value of option!";
 
+        [Theory(DisplayName = "Default & To String")]
+        [InlineData(0)]
+        [InlineData("empty")]
+        public void Default<T>(T data)
+        {
+            var option = new Option<T>();
+            var result = option.ToString();
+            Assert.Equal("Option()", result);
+        }
+
         [Theory(DisplayName = "New None & To String")]
         [InlineData(0)]
         [InlineData("empty")]
@@ -91,10 +101,23 @@ namespace Mikodev.Optional.Tests
             Assert.False(target.Equals((object)source));
             Assert.False(source.Equals(target));
             Assert.False(target.Equals(source));
+            Assert.False(source.Equals(Option<T>.None()));
+            Assert.False(target.Equals(Option<T>.None()));
             Assert.False(source == target);
             Assert.False(target == source);
             Assert.True(source != target);
             Assert.True(target != source);
+        }
+
+        [Theory(DisplayName = "Not Equal Type Mismatch")]
+        [InlineData(1, 2.0)]
+        [InlineData(3, "4")]
+        public void NotEqualTypeMismatch<T, R>(T some, R data)
+        {
+            Assert.False(Option<T>.None().Equals(Option<R>.None()));
+            Assert.False(Option<T>.Some(some).Equals(Option<R>.Some(data)));
+            Assert.False(Option<T>.None().Equals(data));
+            Assert.False(Option<T>.Some(some).Equals(data));
         }
 
         [Theory(DisplayName = "Cast With None")]
