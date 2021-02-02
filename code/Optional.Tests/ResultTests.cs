@@ -130,6 +130,24 @@ namespace Mikodev.Optional.Tests
             Assert.False(Result<TOk, TError>.Error(b).Equals(Result<ROk, RError>.Error(y)));
         }
 
+        [Fact(DisplayName = "Equality With Nested Option Or Result")]
+        public void EqualityWithNestedOptionOrResult()
+        {
+            var a = Result<Option<int>, Option<string>>.Ok(Option<int>.None());
+            var b = Result<Option<int>, Option<string>>.Ok(Option<int>.None());
+            var c = Result<Option<int>, Option<string>>.Error(Option<string>.Some("data"));
+            var d = c;
+            Assert.True(a.Equals(b));
+            Assert.True(a == b);
+            Assert.True(a != c);
+            Assert.False(a.Equals(c));
+            Assert.False(a == c);
+            Assert.False(a != b);
+
+            Assert.Equal(a.GetHashCode(), b.GetHashCode());
+            Assert.Equal(c.GetHashCode(), d.GetHashCode());
+        }
+
         [Theory(DisplayName = "Cast With Ok")]
         [InlineData(1, 2.3F)]
         [InlineData("one", 2.3)]

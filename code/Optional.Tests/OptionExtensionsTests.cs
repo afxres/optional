@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace Mikodev.Optional.Tests
 {
@@ -60,9 +61,9 @@ namespace Mikodev.Optional.Tests
         [Fact]
         public void Map()
         {
-            var alpha = Option<string>.Some("Hello, world!");
-            var bravo = alpha.Map(x => x.Length);
-            Assert.Equal(Option<int>.Some(13), bravo);
+            var f = new Func<string, int>(x => x.Length);
+            Assert.Equal(Option<int>.None(), Option<string>.None().Map(f));
+            Assert.Equal(Option<int>.Some(13), Option<string>.Some("Hello, world!").Map(f));
         }
 
         [Fact]
@@ -196,9 +197,17 @@ namespace Mikodev.Optional.Tests
         [Fact]
         public void Transpose()
         {
-            var alpha = Result<Option<int>, string>.Ok(Option<int>.Some(5));
-            var bravo = Option<Result<int, string>>.Some(Result<int, string>.Ok(5));
-            Assert.Equal(alpha, bravo.Transpose());
+            var a = Result<Option<int>, string>.Ok(Option<int>.Some(5));
+            var b = Option<Result<int, string>>.Some(Result<int, string>.Ok(5));
+            Assert.Equal(a, b.Transpose());
+
+            var m = Result<Option<int>, string>.Error("error");
+            var n = Option<Result<int, string>>.Some(Result<int, string>.Error("error"));
+            Assert.Equal(m, n.Transpose());
+
+            var x = Result<Option<int>, string>.Ok(Option<int>.None());
+            var y = Option<Result<int, string>>.None();
+            Assert.Equal(x, y.Transpose());
         }
 
         [Fact]

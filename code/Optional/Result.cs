@@ -48,18 +48,19 @@ namespace Mikodev.Optional
         {
             Except();
             other.Except();
-            return data == other.data && EqualityComparer<TOk>.Default.Equals(ok, other.ok) && EqualityComparer<TError>.Default.Equals(error, other.error);
+            return (data is ResultData.Ok)
+                ? other.data is ResultData.Ok && EqualityComparer<TOk>.Default.Equals(ok, other.ok)
+                : other.data is ResultData.Error && EqualityComparer<TError>.Default.Equals(error, other.error);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode()
         {
             Except();
-            var hashCode = 115863327;
-            hashCode = hashCode * -1521134295 + data.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<TOk>.Default.GetHashCode(ok);
-            hashCode = hashCode * -1521134295 + EqualityComparer<TError>.Default.GetHashCode(error);
-            return hashCode;
+            var hash = data is ResultData.Ok
+                ? EqualityComparer<TOk>.Default.GetHashCode(ok)
+                : EqualityComparer<TError>.Default.GetHashCode(error);
+            return hash ^ (int)data;
         }
 
         public static bool operator ==(Result<TOk, TError> left, Result<TOk, TError> right) => left.Equals(right);

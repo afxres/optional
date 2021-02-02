@@ -44,17 +44,17 @@ namespace Mikodev.Optional
         {
             Except();
             other.Except();
-            return data == other.data && EqualityComparer<T>.Default.Equals(some, other.some);
+            return data is OptionData.None
+                ? other.data is OptionData.None
+                : other.data is OptionData.Some && EqualityComparer<T>.Default.Equals(some, other.some);
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override int GetHashCode()
         {
             Except();
-            var hashCode = -814067692;
-            hashCode = hashCode * -1521134295 + data.GetHashCode();
-            hashCode = hashCode * -1521134295 + EqualityComparer<T>.Default.GetHashCode(some);
-            return hashCode;
+            var hash = data is OptionData.None ? 0 : EqualityComparer<T>.Default.GetHashCode(some);
+            return hash ^ (int)data;
         }
 
         public static bool operator ==(Option<T> left, Option<T> right) => left.Equals(right);
