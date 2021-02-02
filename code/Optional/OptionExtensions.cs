@@ -20,10 +20,10 @@ namespace Mikodev.Optional
 
         public static T Except<T>(this Option<T> option, string message)
         {
-            if (option.Intent(out var data) is OptionData.Some)
-                return data;
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
+            if (option.Intent(out var data) is OptionData.Some)
+                return data;
             throw new OptionException(message);
         }
 

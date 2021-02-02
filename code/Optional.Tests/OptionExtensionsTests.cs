@@ -1,10 +1,44 @@
 ﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 
 namespace Mikodev.Optional.Tests
 {
     public class OptionExtensionsTests
     {
+        [Theory(DisplayName = "Argument Null")]
+        [InlineData(nameof(OptionExtensions.Except), 1)]
+        [InlineData(nameof(OptionExtensions.Except), "2")]
+        [InlineData(nameof(OptionExtensions.UnwrapOrElse), 1)]
+        [InlineData(nameof(OptionExtensions.UnwrapOrElse), "2")]
+        [InlineData(nameof(OptionExtensions.Map), 1)]
+        [InlineData(nameof(OptionExtensions.Map), "2")]
+        [InlineData(nameof(OptionExtensions.OkOrElse), 1)]
+        [InlineData(nameof(OptionExtensions.OkOrElse), "2")]
+        [InlineData(nameof(OptionExtensions.AndThen), 1)]
+        [InlineData(nameof(OptionExtensions.AndThen), "2")]
+        [InlineData(nameof(OptionExtensions.OrElse), 1)]
+        [InlineData(nameof(OptionExtensions.OrElse), "2")]
+        public void ArgumentNull<T>(string method, T some)
+        {
+            var methodData = typeof(OptionExtensions).GetMethod(method);
+            Assert.NotNull(methodData);
+            var values = Enumerable.Range(0, methodData.GetGenericArguments().Length).Select(_ => typeof(T)).ToArray();
+            var methodInfo = methodData.MakeGenericMethod(values);
+            var parameters = methodInfo.GetParameters();
+            Assert.Equal(2, parameters.Length);
+            var parameter = parameters.Last();
+            var source = Expression.Parameter(typeof(Option<T>), "source");
+            var invoke = Expression.Call(methodInfo, source, Expression.Constant(null, parameter.ParameterType));
+            var lambda = Expression.Lambda<Action<Option<T>>>(invoke, source);
+            var action = lambda.Compile();
+            var alpha = Assert.Throws<ArgumentNullException>(() => action.Invoke(Option<T>.None()));
+            var bravo = Assert.Throws<ArgumentNullException>(() => action.Invoke(Option<T>.Some(some)));
+            Assert.Equal(parameter.Name, alpha.ParamName);
+            Assert.Equal(parameter.Name, bravo.ParamName);
+        }
+
         [Fact]
         public void IsSome()
         {
