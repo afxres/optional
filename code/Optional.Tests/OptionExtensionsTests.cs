@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Xunit;
@@ -37,6 +38,32 @@ namespace Mikodev.Optional.Tests
             var bravo = Assert.Throws<ArgumentNullException>(() => action.Invoke(Option<T>.Some(some)));
             Assert.Equal(parameter.Name, alpha.ParamName);
             Assert.Equal(parameter.Name, bravo.ParamName);
+        }
+
+        public static IEnumerable<object[]> ArgumentNullData()
+        {
+            static object[] Make(Expression<Action> lambda, string name) => new object[] { lambda, name };
+            yield return Make(() => Option<int>.None().MapOr("1", null), "func");
+            yield return Make(() => Option<string>.Some("2").MapOr(3, null), "func");
+            yield return Make(() => Option<int>.None().MapOrElse(null, Convert.ToString), "default");
+            yield return Make(() => Option<string>.Some("4").MapOrElse(null, int.Parse), "default");
+            yield return Make(() => Option<int>.None().MapOrElse(() => "5", null), "func");
+            yield return Make(() => Option<string>.Some("6").MapOrElse(() => 7, null), "func");
+        }
+
+        [Theory(DisplayName = "Argument Null Advance")]
+        [MemberData(nameof(ArgumentNullData))]
+        public void ArgumentNullAdvance(Expression<Action> lambda, string parameterName)
+        {
+            var methodCall = Assert.IsAssignableFrom<MethodCallExpression>(lambda.Body);
+            var methodInfo = methodCall.Method;
+            var argument = methodCall.Arguments.Where(x => x is ConstantExpression { Value: null }).Single();
+            var argumentIndex = methodCall.Arguments.IndexOf(argument);
+            var parameter = methodInfo.GetParameters()[argumentIndex];
+            var action = lambda.Compile();
+            var error = Assert.Throws<ArgumentNullException>(action);
+            Assert.Equal(parameterName, parameter.Name);
+            Assert.Equal(parameterName, error.ParamName);
         }
 
         [Fact]
