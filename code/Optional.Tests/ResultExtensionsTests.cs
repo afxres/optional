@@ -62,12 +62,11 @@ namespace Mikodev.Optional.Tests
         [Fact]
         public void MapError()
         {
-            string ToString(int data) => $"error code: {data}";
-
+            static string Message(int data) => $"error code: {data}";
             var alpha = Result<int, int>.Ok(2);
             var bravo = Result<int, int>.Error(13);
-            Assert.Equal(Result<int, string>.Ok(2), alpha.MapError(ToString));
-            Assert.Equal(Result<int, string>.Error("error code: 13"), bravo.MapError(ToString));
+            Assert.Equal(Result<int, string>.Ok(2), alpha.MapError(Message));
+            Assert.Equal(Result<int, string>.Error("error code: 13"), bravo.MapError(Message));
         }
 
         [Fact]
@@ -146,7 +145,7 @@ namespace Mikodev.Optional.Tests
         [Fact]
         public void UnwrapOrElse()
         {
-            int Count(string x) => x.Length;
+            static int Count(string x) => x.Length;
             Assert.Equal(2, Result<int, string>.Ok(2).UnwrapOrElse(Count));
             Assert.Equal(3, Result<int, string>.Error("foo").UnwrapOrElse(Count));
         }
