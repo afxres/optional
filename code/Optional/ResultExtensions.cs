@@ -98,10 +98,10 @@ namespace Mikodev.Optional
 
         public static T Except<T, E>(this Result<T, E> result, string message)
         {
-            if (result.Intent(out var ok, out _) is ResultData.Ok)
-                return ok;
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
+            if (result.Intent(out var ok, out _) is ResultData.Ok)
+                return ok;
             throw new ResultException(message);
         }
 
@@ -114,10 +114,10 @@ namespace Mikodev.Optional
 
         public static E ExceptError<T, E>(this Result<T, E> result, string message)
         {
-            if (result.Intent(out _, out var error) is ResultData.Error)
-                return error;
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
+            if (result.Intent(out _, out var error) is ResultData.Error)
+                return error;
             throw new ResultException(message);
         }
 
