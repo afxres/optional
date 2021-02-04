@@ -162,8 +162,9 @@ namespace Mikodev.Optional.Tests
         [Fact]
         public void Expect()
         {
-            var alpha = Result<int, string>.Error("emergency failure");
-            var error = Assert.Throws<ResultException>(() => alpha.Except("Testing expect"));
+            var alpha = Result<int, string>.Ok(1).Except("Not possible");
+            var error = Assert.Throws<ResultException>(() => Result<int, string>.Error("emergency failure").Except("Testing expect"));
+            Assert.Equal(1, alpha);
             Assert.Equal("Testing expect", error.Message);
         }
 
@@ -179,8 +180,9 @@ namespace Mikodev.Optional.Tests
         [Fact]
         public void ExpectError()
         {
-            var alpha = Result<int, string>.Ok(10);
-            var error = Assert.Throws<ResultException>(() => alpha.ExceptError("Testing error"));
+            var alpha = Result<int, string>.Error("invalid").ExceptError("Not possible");
+            var error = Assert.Throws<ResultException>(() => Result<int, string>.Ok(10).ExceptError("Testing error"));
+            Assert.Equal("invalid", alpha);
             Assert.Equal("Testing error", error.Message);
         }
 
@@ -196,9 +198,17 @@ namespace Mikodev.Optional.Tests
         [Fact]
         public void Transpose()
         {
-            var alpha = Result<Option<int>, string>.Ok(Option<int>.Some(5));
-            var bravo = Option<Result<int, string>>.Some(Result<int, string>.Ok(5));
-            Assert.Equal(bravo, alpha.Transpose());
+            var a = Option<Result<int, string>>.Some(Result<int, string>.Ok(5));
+            var b = Result<Option<int>, string>.Ok(Option<int>.Some(5));
+            Assert.Equal(a, b.Transpose());
+
+            var m = Option<Result<int, string>>.Some(Result<int, string>.Error("bad"));
+            var n = Result<Option<int>, string>.Error("bad");
+            Assert.Equal(m, n.Transpose());
+
+            var x = Option<Result<int, string>>.None();
+            var y = Result<Option<int>, string>.Ok(Option<int>.None());
+            Assert.Equal(x, y.Transpose());
         }
     }
 }
