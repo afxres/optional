@@ -18,7 +18,7 @@ namespace Mikodev.Optional
 
         public static Result<TOk, TError> Error<TOk, TError>(TError error) => Result<TOk, TError>.Error(error);
 
-        public static Unit Lock<T>(T locker, Action action) where T : class => Lock(locker, MakeFunc(action));
+        public static Unit Lock<T>(T locker, Action func) where T : class => Lock(locker, MakeFunc(func));
 
         public static U Lock<T, U>(T locker, Func<U> func) where T : class
         {

@@ -4,24 +4,24 @@ namespace Mikodev.Optional
 {
     public static partial class Extensions
     {
-        private static Func<Unit> MakeFunc(Action action)
+        private static Func<Unit> MakeFunc(Action func)
         {
-            if (action == null)
-                throw new ArgumentNullException(nameof(action));
+            if (func == null)
+                throw new ArgumentNullException(nameof(func));
             return () =>
             {
-                action.Invoke();
+                func.Invoke();
                 return new Unit();
             };
         }
 
-        private static Func<T, Unit> MakeFunc<T>(Action<T> action)
+        private static Func<T, Unit> MakeFunc<T>(Action<T> func)
         {
-            if (action == null)
-                throw new ArgumentNullException(nameof(action));
+            if (func == null)
+                throw new ArgumentNullException(nameof(func));
             return item =>
             {
-                action.Invoke(item);
+                func.Invoke(item);
                 return new Unit();
             };
         }

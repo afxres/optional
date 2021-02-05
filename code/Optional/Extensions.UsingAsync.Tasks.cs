@@ -11,14 +11,19 @@ namespace Mikodev.Optional
 
         public static Task<U> UsingAsync<T, U>(Func<T> data, Func<T, Task<U>> func) where T : IDisposable => UsingAsync(MakeTaskFunc(data), func);
 
-        public static async Task<U> UsingAsync<T, U>(Func<Task<T>> data, Func<T, Task<U>> func) where T : IDisposable
+        public static Task<U> UsingAsync<T, U>(Func<Task<T>> data, Func<T, Task<U>> func) where T : IDisposable
         {
+            static async Task<U> Invoke(Func<Task<T>> data, Func<T, Task<U>> func)
+            {
+                using (var item = await data.Invoke())
+                    return await func.Invoke(item);
+            }
+
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
             if (func == null)
                 throw new ArgumentNullException(nameof(func));
-            using (var item = await data.Invoke())
-                return await func.Invoke(item);
+            return Invoke(data, func);
         }
     }
 }
